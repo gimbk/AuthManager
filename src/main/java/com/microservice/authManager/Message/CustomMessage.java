@@ -9,7 +9,7 @@ public class CustomMessage {
     public static final String BAD_CREDENTIALS="Bad credentials, please check your or password.";
     public static final String APP_NOT_FOUND = "Application not recognized";
     public static final String SUCCESS_RESET = "Your password account has been successfully reset";
-    public static final String TOKEN_INTROUVABLE = "Unknown token provided";
+    public static final String TOKEN_INTROUVABLE = "Invalid or blacklisted token.";
     public static final String EMAIL_RESET_SENT = "An e-mail has been sent to your mailbox. ";
     public static final String EXISTE = "Already exists";
     public static final String EMAIL_EXIST = "Error: Email is already in use!";

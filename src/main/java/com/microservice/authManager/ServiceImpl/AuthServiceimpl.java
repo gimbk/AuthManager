@@ -15,7 +15,10 @@ import com.microservice.authManager.Exception.EntitiesNotFoundException;
 import com.microservice.authManager.Message.CustomMessage;
 import com.microservice.authManager.Repository.RoleRepository;
 import com.microservice.authManager.Repository.UserRepository;
+import com.microservice.authManager.Security.JwtBlacklistConfig;
 import com.microservice.authManager.Security.jwt.JwtUtils;
+import com.microservice.authManager.Service.AuthService;
+import com.microservice.authManager.Utils.Utils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
@@ -53,7 +56,7 @@ import java.util.Map;
 @Service
 @Transactional
 @Slf4j
-public class AuthServiceimpl {
+public class AuthServiceimpl implements AuthService {
     @Autowired
     private UserRepository userRepository;
 
@@ -67,22 +70,62 @@ public class AuthServiceimpl {
     PasswordEncoder encoder;
 
     @Autowired
+    private JwtBlacklistConfig jwtBlacklistConfig;
+
+    @Autowired
     JwtUtils jwtUtils;
 
-    public ResponseEntity<?> saveUserAndRole(String keyapp, LoginDTO loginDTO) throws IOException {
+    private static final Logger logger = LoggerFactory.getLogger(AuthServiceimpl.class);
+
+    @Override
+    public HttpResponse<?> logout(HttpServletRequest request) {
+        try{
+            String token = Utils.extractTokenFromHeader(request);
+            if (token != null) {
+                if (!jwtBlacklistConfig.isTokenBlacklisted(token)) {
+                    jwtBlacklistConfig.blacklistToken(token);
+                    return HttpResponse.<User>builder()
+                            .message(CustomMessage.LOGOUT)
+                            //.status(HttpStatus.NOT_FOUND)
+                            .statusCode(HttpStatus.OK.value())
+                            .build();
+                }
+            }
+            return HttpResponse.<User>builder()
+                    .message(CustomMessage.TOKEN_INTROUVABLE)
+                    .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                    .build();
+        }catch (Exception exception){
+            return HttpResponse.<User>builder()
+                    .message(exception.getMessage())
+                    .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                    .build();
+        }
+    }
+
+    @Override
+    public HttpResponse<?> saveUserAndRole(String keyapp, LoginDTO loginDTO) throws IOException {
         UserDTO userDTO = getConcernedUser(keyapp,loginDTO);
         Map<String,Object> map = new HashMap<>();
         if (userDTO == null){
             map.put("statuscode",HttpStatus.NOT_FOUND.value());
             //map.put("message",userDTO);
             map.put("message",CustomMessage.USER_NOT_EXIST);
-            return ResponseEntity.ok(map);
+            return HttpResponse.<User>builder()
+                    .message(CustomMessage.USER_NOT_EXIST)
+                    //.status(HttpStatus.NOT_FOUND)
+                    .statusCode(HttpStatus.NOT_FOUND.value())
+                    .build();
         }
         String roleResponse = getRoleById(userDTO.getRoleID(),keyapp);
         if (roleResponse == null){
             map.put("statuscode",HttpStatus.NOT_FOUND.value());
             map.put("message",CustomMessage.ROLE_NOT_EXIST);
-            return ResponseEntity.ok(map);
+            return HttpResponse.<User>builder()
+                    .message(CustomMessage.ROLE_NOT_EXIST)
+                    //.status(HttpStatus.NOT_FOUND)
+                    .statusCode(HttpStatus.NOT_FOUND.value())
+                    .build();
         }
         User user = new User();
         user.setUuid(userDTO.getUuid());
@@ -110,13 +153,10 @@ public class AuthServiceimpl {
 
     }
 
-
-    private static final Logger logger = LoggerFactory.getLogger(AuthServiceimpl.class);
-
-    public ResponseEntity<?> authenticateUser(LoginDTO loginDTO) {
+    @Override
+    public HttpResponse<?> authenticateUser(LoginDTO loginDTO) {
         logger.info("Démarrage de l'authentification pour l'utilisateur : {}", loginDTO.getUsername());
         Map<String, Object> map = new HashMap<>();
-
         try {
             // Authentification de l'utilisateur
             Authentication authentication = authenticationManager.authenticate(
@@ -147,14 +187,23 @@ public class AuthServiceimpl {
             JwtResponse jwtResponse = new JwtResponse(jwt, userDetails.getUuid(),username, name, firstname, role);
             logger.info("Réponse JWT générée avec succès pour l'utilisateur : {}", username);
 
-            return ResponseEntity.ok(jwtResponse);
+            return HttpResponse.<User>builder()
+                    .message(CustomMessage.ROLE_NOT_EXIST)
+                    .data(jwtResponse)
+                    .statusCode(HttpStatus.NOT_FOUND.value())
+                    .build();
         } catch (Exception exception) {
             logger.error("Erreur lors de l'authentification de l'utilisateur : {}", loginDTO.getUsername(), exception);
+            return HttpResponse.<User>builder()
+                    .message(exception.getMessage())
+                    .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .build();
             throw new EntitiesNotFoundException(exception.getMessage());
         }
     }
 
-
+    @Override
     public UserDTO getConcernedUser(String keyapp, LoginDTO loginDTO) throws IOException {
         CloseableHttpClient client = HttpClients.createDefault();
         // Créer l'objet Gson pour la sérialisation
@@ -188,6 +237,7 @@ public class AuthServiceimpl {
 
     }
 
+    @Override
     public String getRoleById(Long role, String keyapp) throws IOException {
         CloseableHttpClient client = HttpClients.createDefault();
         // Créer l'objet Gson pour la sérialisation
