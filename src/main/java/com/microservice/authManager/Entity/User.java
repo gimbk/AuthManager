@@ -1,17 +1,27 @@
 package com.microservice.authManager.Entity;
 
+import lombok.Data;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.time.LocalDateTime;
 
+@Entity
+@Data
 public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String uuid;
     private String firstname;
     private String name;
     private String dateOfBirth;
     private String placeOfBirth;
-    private String countryOfBirth;
+    private String CountryOfBirth;
     private String cityOfBirth;
-    private String countryResidence;
+    private String CountryResidence;
     private String cityResidence;
     private String civility;
     private String phone;
@@ -26,14 +36,15 @@ public class User {
     private String keyapp;
     private String username;
     private String password;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private Long roleID;
+    private String createdAt;
+    private String updatedAt;
+    private String role;
     private int numberConnect;
     private LocalDateTime lastConnect;
     private boolean isConnected;
     private boolean isActived;
     private boolean isDeleted;
+
     private LocalDateTime deletedAt;
 
     public Long getId() {
@@ -85,11 +96,11 @@ public class User {
     }
 
     public String getCountryOfBirth() {
-        return countryOfBirth;
+        return CountryOfBirth;
     }
 
     public void setCountryOfBirth(String countryOfBirth) {
-        this.countryOfBirth = countryOfBirth;
+        CountryOfBirth = countryOfBirth;
     }
 
     public String getCityOfBirth() {
@@ -101,11 +112,11 @@ public class User {
     }
 
     public String getCountryResidence() {
-        return countryResidence;
+        return CountryResidence;
     }
 
     public void setCountryResidence(String countryResidence) {
-        this.countryResidence = countryResidence;
+        CountryResidence = countryResidence;
     }
 
     public String getCityResidence() {
@@ -220,28 +231,28 @@ public class User {
         this.password = password;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public String getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
     }
 
-    public LocalDateTime getUpdatedAt() {
+    public String getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) {
+    public void setUpdatedAt(String updatedAt) {
         this.updatedAt = updatedAt;
     }
 
-    public Long getRoleID() {
-        return roleID;
+    public String getRole() {
+        return role;
     }
 
-    public void setRoleID(Long roleID) {
-        this.roleID = roleID;
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public int getNumberConnect() {

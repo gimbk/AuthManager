@@ -3,9 +3,11 @@ package com.microservice.authManager.Message;
 public class CustomMessage {
     public static final String DONNEE_INTROUVABLE = "This information cannot be found";
     public static final String EMAIL_INTROUVABLE = "No account matching to the email provided";
-
+    public static final String USER_NOT_EXIST = "This user not exist.";
+    public static final String ROLE_NOT_EXIST = "This role not exist.";
     public static final String LOGOUT ="Logout successful";
     public static final String BAD_CREDENTIALS="Bad credentials, please check your or password.";
+    public static final String APP_NOT_FOUND = "Application not recognized";
     public static final String SUCCESS_RESET = "Your password account has been successfully reset";
     public static final String TOKEN_INTROUVABLE = "Unknown token provided";
     public static final String EMAIL_RESET_SENT = "An e-mail has been sent to your mailbox. ";

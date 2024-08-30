@@ -3,38 +3,40 @@ package com.microservice.authManager.Dto.request;
 import java.time.LocalDateTime;
 
 public class UserDTO {
-    private Long id;
-    private String uuid;
-    private String firstname;
-    private String name;
-    private String dateOfBirth;
-    private String placeOfBirth;
-    private String CountryOfBirth;
-    private String cityOfBirth;
-    private String CountryResidence;
-    private String cityResidence;
-    private String civility;
-    private String phone;
-    private String email;
-    private String areaCode;
-    private String typePiece;
-    private String idPiece;
-    private String dateIssue;
-    private String dateExpiration;
-    private String signature;
-    private String photo;
-    private String keyapp;
-    private String username;
-    private String password;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private String title;
-    private int numberConnect;
-    private LocalDateTime lastConnect;
-    private boolean isConnected;
-    private boolean isActived;
-    private boolean isDeleted;
-    private LocalDateTime deletedAt;
+    public Long id;
+    public String uuid;
+    public String firstname;
+    public String name;
+    public String dateOfBirth;
+    public String placeOfBirth;
+    public String CountryOfBirth;
+    public String cityOfBirth;
+    public String CountryResidence;
+    public String cityResidence;
+    public String civility;
+    public String phone;
+    public String email;
+    public String areaCode;
+    public String typePiece;
+    public String idPiece;
+    public String dateIssue;
+    public String dateExpiration;
+    public String signature;
+    public String photo;
+    public String keyapp;
+    public String username;
+    public String password;
+    public String createdAt;
+    public String updatedAt;
+    public Long roleID;
+    public int numberConnect;
+    public LocalDateTime lastConnect;
+    public boolean isConnected;
+    public boolean isActived;
+    public boolean isDeleted;
+    public LocalDateTime deletedAt;
+    public int statusCode;
+    public int role;
 
     public Long getId() {
         return id;
@@ -220,28 +222,28 @@ public class UserDTO {
         this.password = password;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public String getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
     }
 
-    public LocalDateTime getUpdatedAt() {
+    public String getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) {
+    public void setUpdatedAt(String updatedAt) {
         this.updatedAt = updatedAt;
     }
 
-    public String getTitle() {
-        return title;
+    public Long getRoleID() {
+        return roleID;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setRoleID(Long roleID) {
+        this.roleID = roleID;
     }
 
     public int getNumberConnect() {

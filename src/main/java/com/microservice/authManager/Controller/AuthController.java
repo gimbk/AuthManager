@@ -5,6 +5,7 @@ import com.microservice.authManager.Dto.response.JwtResponse;
 import com.microservice.authManager.Exception.EntitiesNotFoundException;
 import com.microservice.authManager.Security.JwtBlacklistConfig;
 import com.microservice.authManager.Security.jwt.JwtUtils;
+import com.microservice.authManager.ServiceImpl.AuthServiceimpl;
 import com.microservice.authManager.ServiceImpl.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,7 +18,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,31 +38,15 @@ public class AuthController {
     JwtUtils jwtUtils;
 
     @Autowired
+    private AuthServiceimpl authServiceimpl;
+
+    @Autowired
     private JwtBlacklistConfig jwtBlacklistConfig;
 
     @PostMapping("/signin")
-    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginDTO loginDTO) {
-
-        try{
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(loginDTO.getUsername(), loginDTO.getPassword()));
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            String jwt = jwtUtils.generateJwtToken(authentication);
-            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-            String role = userDetails.getAuthorities().stream()
-                    .findFirst()
-                    .map(GrantedAuthority::getAuthority)
-                    .orElse(null);
-//            }
-           // authenticateUserConnect(credentials);
-            return ResponseEntity.ok(new JwtResponse(jwt,
-                    userDetails.getUsername(),
-                    userDetails.getName(),
-                    userDetails.getFirstname(),
-                    role,userDetails.getUuid()));
-        }catch (Exception exception){
-            throw new EntitiesNotFoundException(exception.getMessage());
-        }
+    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginDTO loginDTO, HttpServletRequest request) throws IOException {
+        String keyapp = request.getHeader("keyapp");
+        return ResponseEntity.ok().body(authServiceimpl.saveUserAndRole(keyapp,loginDTO));
     }
 
 }

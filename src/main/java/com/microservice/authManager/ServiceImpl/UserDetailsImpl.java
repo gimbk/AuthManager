@@ -2,15 +2,15 @@ package com.microservice.authManager.ServiceImpl;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.microservice.authManager.Dto.request.UserDTO;
+import com.microservice.authManager.Entity.Role;
 import com.microservice.authManager.Entity.User;
+import com.microservice.authManager.Repository.RoleRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class UserDetailsImpl implements UserDetails {
@@ -27,6 +27,9 @@ public class UserDetailsImpl implements UserDetails {
     @JsonIgnore
     private String password;
 
+    @Autowired
+    private static RoleRepository roleRepository;
+
     private Collection<? extends GrantedAuthority> authorities;
     public UserDetailsImpl(String uuid, String name, String firstname, String loginId , String password,
                            Collection<? extends GrantedAuthority> authorities) {
@@ -38,9 +41,9 @@ public class UserDetailsImpl implements UserDetails {
         this.authorities = authorities;
     }
 
-    public static UserDetailsImpl build(UserDTO user) {
-
-        String role = user.getTitle();
+    public static UserDetailsImpl build(User user) {
+        //Optional<Role> role = roleRepository.findByProvide(user.getRoleID());
+        String role = user.getRole();
 
         GrantedAuthority authority = new SimpleGrantedAuthority(role);
 
